@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+	<!-- 数据库驱动 -->
+	<properties resource="resource.properties" />
+	<!-- 指定数据连接驱动jar地址 -->
+	<!-- <classPathEntry location="${driverPath}" /> -->
+	
+	<context id="context" targetRuntime="MyBatis3"
+		defaultModelType="flat">
+
+		<!--设置可以获取tables remarks信息 -->
+		<property name="useInformationSchema" value="true" />
+		<!--设置可以获取remarks信息 -->
+		<property name="remarks" value="true" />
+		<!-- 生成的Java文件的编码 -->
+		<property name="javaFileEncoding" value="UTF-8" />
+
+		<!-- beginningDelimiter和endingDelimiter：指明数据库的用于标记数据库对象名的符号，比如ORACLE就是双引号，MYSQL默认是`反引号； -->
+		<property name="beginningDelimiter" value="`" />
+		<property name="endingDelimiter" value="`" />
+
+		<plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
+		<plugin
+			type="org.mybatis.generator.plugins.EqualsHashCodePlugin" />
+		<plugin
+			type="org.mybatis.generator.plugins.RenameExampleClassPlugin">
+			<property name="searchString" value="Example$" />
+			<property name="replaceString" value="Criteria" />
+		</plugin>
+
+		<!-- 去掉生成出来的代码的注解 -->
+		<commentGenerator>
+			<!-- 是否取消注释 -->
+			<property name="suppressAllComments" value="false" />
+			<!-- 是否生成注释代时间戳 -->
+			<property name="suppressDate" value="true" />
+		</commentGenerator>
+
+		<!--数据库链接URL，用户名、密码 -->
+		<jdbcConnection driverClass="${jdbc.driverClass}"
+			connectionURL="${jdbc.url}" userId="${jdbc.username}"
+			password="${jdbc.password}">
+		</jdbcConnection>
+
+		<javaTypeResolver>
+			<!-- 是否使用bigDecimal， false可自动转化以下类型（Long, Integer, Short, etc.） -->
+			<property name="forceBigDecimals" value="false" />
+		</javaTypeResolver>
+
+		<!-- 生成模型的包名和位置 -->
+		<javaModelGenerator
+			targetPackage="${targetPackage}.model"
+			targetProject="${targetProject}">
+			<!-- 是否在当前路径下新加一层schema,eg：fase路径com.zrc.user.model， true:com.zrc.user.model.[schemaName] -->
+			<property name="enableSubPackages" value="false" />
+			<property name="trimStrings" value="true" />
+		</javaModelGenerator>
+
+		<!-- 生成映射文件的包名和位置 -->
+		<sqlMapGenerator
+			targetPackage="mapping"
+			targetProject="${targetProjectResources}">
+			<property name="enableSubPackages" value="false" />
+		</sqlMapGenerator>
+
+		<!-- 生成Mapper的包名和位置 -->
+		<javaClientGenerator type="XMLMAPPER"
+			targetPackage="${targetPackage}.mapper" targetProject="${targetProject}">
+			<property name="enableSubPackages" value="false" />
+		</javaClientGenerator>
+
+		<!-- 要生成的表 tableName是数据库中的表名或视图名 domainObjectName是实体类名 -->
+		<table tableName="sys_user" domainObjectName="SysUser"></table>
+
+	</context>
+</generatorConfiguration>
