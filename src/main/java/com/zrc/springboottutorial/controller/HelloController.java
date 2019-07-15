@@ -6,7 +6,10 @@ import com.zrc.springboottutorial.model.SysUser;
 import com.zrc.springboottutorial.model.SysUserCriteria;
 import com.zrc.springboottutorial.response.CommonReturnType;
 import com.zrc.springboottutorial.service.SysUserService;
+import com.zrc.springboottutorial.utils.JsonUtils;
+import com.zrc.springboottutorial.utils.RedisOperator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,10 +21,26 @@ public class HelloController extends BaseController {
     @Autowired
     private SysUserService sysUserService;
 
+    @Autowired
+    private RedisOperator redis;
+
     @RequestMapping("/hello")
     public CommonReturnType hello() throws BussinessException {
 
-        SysUser user = sysUserService.getSysUserById("190709BWZCYT18X4");
+        String userStr = redis.get("json:info:user:190709BX013WFZ7C");
+        SysUser user = null;
+        if(StringUtils.isEmpty(userStr)) {
+            System.out.println("查询数据库");
+            user = sysUserService.getSysUserById("190709BX013WFZ7C");
+
+            if(user != null) {
+                redis.set("json:info:user:190709BX013WFZ7C", JsonUtils.objectToJson(user), 2000);
+            }
+        }
+        else{
+            System.out.println("直接从缓存读");
+            user = JsonUtils.jsonToPojo(userStr,SysUser.class);
+        }
 
         if(user == null){
             throw new BussinessException(EmBusinessError.USER_NOT_EXIST);
