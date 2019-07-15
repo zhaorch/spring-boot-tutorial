@@ -94,4 +94,6 @@ public interface SysUserMapper {
      * @mbg.generated
      */
     int updateByPrimaryKey(SysUser record);
+
+    List<SysUser> selectByName(String name);
 }
