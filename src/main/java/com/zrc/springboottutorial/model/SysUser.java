@@ -1,5 +1,9 @@
 package com.zrc.springboottutorial.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -11,6 +15,7 @@ public class SysUser implements Serializable {
      *
      * @mbg.generated
      */
+    @JsonIgnore
     private String id;
 
     /**
@@ -20,6 +25,7 @@ public class SysUser implements Serializable {
      *
      * @mbg.generated
      */
+
     private String name;
 
     /**
@@ -29,6 +35,8 @@ public class SysUser implements Serializable {
      *
      * @mbg.generated
      */
+    //@JsonFormat(pattern="yyyy-MM-dd hh:mm:ss a",locale="zh",timezone="GMT+8")
+    @JsonFormat(pattern="yyyy-MM-dd",locale="zh",timezone="GMT+8")
     private Date birthday;
 
     /**
@@ -38,6 +46,7 @@ public class SysUser implements Serializable {
      *
      * @mbg.generated
      */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer gender;
 
     /**
