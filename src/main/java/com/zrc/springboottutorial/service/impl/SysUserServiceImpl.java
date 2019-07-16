@@ -2,6 +2,7 @@ package com.zrc.springboottutorial.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.zrc.springboottutorial.annotation.SystemServiceLog;
 import com.zrc.springboottutorial.mapper.SysUserMapper;
 import com.zrc.springboottutorial.model.SysUser;
 import com.zrc.springboottutorial.model.SysUserCriteria;
@@ -39,6 +40,8 @@ public class SysUserServiceImpl implements SysUserService {
 
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS)
+	//此处为AOP拦截Service记录异常信息。方法不需要加try-catch
+	@SystemServiceLog(description = "调用SysUserService.queryUserListPaged")
 	public PageInfo<SysUser> queryUserListPaged(SysUser user, Integer page, Integer pageSize) {
 		// 开始分页
 		PageHelper.startPage(page, pageSize);

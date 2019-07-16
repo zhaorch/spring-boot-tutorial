@@ -1,6 +1,7 @@
 package com.zrc.springboottutorial.controller;
 
 import com.github.pagehelper.PageInfo;
+import com.zrc.springboottutorial.annotation.SystemControllerLog;
 import com.zrc.springboottutorial.error.BussinessException;
 import com.zrc.springboottutorial.error.EmBusinessError;
 import com.zrc.springboottutorial.model.SysUser;
@@ -14,6 +15,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,7 +37,10 @@ public class HelloController{
     @Autowired
     private ZrcResource resource;
 
+    private static Logger logger = LoggerFactory.getLogger(HelloController.class);
+
     @RequestMapping(value = "/hello", method = RequestMethod.GET)
+    @SystemControllerLog(description = "调用Hello")
     public CommonReturnType hello(String id) throws BussinessException {
         //@RequestParam(value="id") String id  如果用这个注解，则url中id必须存在否则报错
         String userID = "190709BX013WFZ7C";
@@ -59,7 +65,7 @@ public class HelloController{
         if(user == null){
             throw new BussinessException(EmBusinessError.USER_NOT_EXIST);
         }
-
+        logger.info("Hello "+ user.getName());
         return  CommonReturnType.create("Hello Spring boot 中国" + user.getName());
     }
 
@@ -84,7 +90,6 @@ public class HelloController{
 
     @RequestMapping("/hello4")
     public CommonReturnType hello4(Integer page) {
-
         if (page == null) {
             page = 1;
         }
@@ -96,7 +101,6 @@ public class HelloController{
         PageInfo<SysUser> pageInfo = sysUserService.queryUserListPaged(user, page, pageSize);
 
         return CommonReturnType.create(pageInfo);
-
     }
 
     @RequestMapping("getResource")
