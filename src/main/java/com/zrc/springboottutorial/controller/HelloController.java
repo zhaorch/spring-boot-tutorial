@@ -15,19 +15,25 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.hibernate.validator.constraints.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @Api(value = "HelloController")
+@Validated
 public class HelloController{
 
     @Autowired
@@ -36,6 +42,9 @@ public class HelloController{
     private RedisOperator redis;
     @Autowired
     private ZrcResource resource;
+
+    @Autowired
+    private Validator validator;
 
     private static Logger logger = LoggerFactory.getLogger(HelloController.class);
 
@@ -132,4 +141,59 @@ public class HelloController{
 
         return CommonReturnType.create(userName);
     }
+
+    /**如果只有少数对象，直接把参数写到Controller层，然后在Controller层进行验证就可以了。*/
+    @RequestMapping(value = "/hibernateValidator", method = RequestMethod.GET)
+    public CommonReturnType hibernateValidator(@Range(min = 1, max = 9, message = "年级只能从1-9")
+                      @RequestParam(name = "grade", required = true)
+                              int grade,
+                      @Min(value = 1, message = "班级最小只能1")
+                      @Max(value = 99, message = "班级最大只能99")
+                      @RequestParam(name = "classroom", required = true)
+                              int classroom) {
+        //http://127.0.0.1:8090/hibernateValidator?grade=10&classroom=100
+
+        System.out.println(grade + "," + classroom);
+        return CommonReturnType.create(grade + "," + classroom);
+    }
+
+    @RequestMapping("/hibernateValidator2")
+    public CommonReturnType hibernateValidator2(){
+
+//        @Null 被注释的元素必须为 null
+//        @NotNull    被注释的元素必须不为 null
+//        @AssertTrue 被注释的元素必须为 true
+//        @AssertFalse 被注释的元素必须为 false
+//        @Min(value)     被注释的元素必须是一个数字，其值必须大于等于指定的最小值
+//        @Max(value)     被注释的元素必须是一个数字，其值必须小于等于指定的最大值
+//        @DecimalMin(value)  被注释的元素必须是一个数字，其值必须大于等于指定的最小值
+//        @DecimalMax(value)  被注释的元素必须是一个数字，其值必须小于等于指定的最大值
+//        @Size(max=, min=)   被注释的元素的大小必须在指定的范围内
+//        @Digits (integer, fraction)     被注释的元素必须是一个数字，其值必须在可接受的范围内
+//        @Past   被注释的元素必须是一个过去的日期
+//        @Future     被注释的元素必须是一个将来的日期
+//        @Pattern(regex=,flag=)  被注释的元素必须符合指定的正则表达式
+//
+//        Hibernate Validator 附加的 constraint
+//        @NotBlank(message =)   验证字符串非null，且长度必须大于0
+//        @Email  被注释的元素必须是电子邮箱地址
+//        @Length(min=,max=)  被注释的字符串的大小必须在指定的范围内
+//        @NotEmpty   被注释的字符串的必须非空
+//        @Range(min=,max=,message=)  被注释的元素必须在合适的范围内
+
+        //http://127.0.0.1:8090/hibernateValidator2
+        SysUser user = new SysUser();
+        user.setName("Zrc");
+        user.setGender(2);
+        Set<ConstraintViolation<SysUser>> violationSet = validator.validate(user);
+        if(!violationSet.isEmpty()) {
+            for (ConstraintViolation<SysUser> model : violationSet) {
+                System.out.println(model.getMessage());
+            }
+            throw new ConstraintViolationException("ZRC", violationSet);
+        }
+        return CommonReturnType.create(user.getName());
+    }
+
+
 }

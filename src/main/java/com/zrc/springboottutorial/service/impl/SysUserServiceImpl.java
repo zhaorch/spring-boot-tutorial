@@ -24,7 +24,6 @@ public class SysUserServiceImpl implements SysUserService {
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS)
 	public SysUser getSysUserById(String id) {
-		// TODO Auto-generated method stub
 		return sysUserMapper.selectByPrimaryKey(id);
 	}
 

@@ -3,7 +3,11 @@ package com.zrc.springboottutorial.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.zrc.springboottutorial.validation.custom.CaseMode;
+import com.zrc.springboottutorial.validation.custom.CheckCase;
+import org.hibernate.validator.constraints.Range;
 
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -25,7 +29,8 @@ public class SysUser implements Serializable {
      *
      * @mbg.generated
      */
-
+    @NotBlank(message="用户名不能为空")
+    @CheckCase(value = CaseMode.LOWER,message = "name必须是小写")
     private String name;
 
     /**
@@ -47,6 +52,7 @@ public class SysUser implements Serializable {
      * @mbg.generated
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Range(min=0,max=1,message="性别只能为0/1")
     private Integer gender;
 
     /**
