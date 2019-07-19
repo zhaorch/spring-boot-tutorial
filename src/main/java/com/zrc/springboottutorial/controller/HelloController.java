@@ -15,6 +15,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections4.MapUtils;
 import org.hibernate.validator.constraints.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,9 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -90,6 +93,12 @@ public class HelloController {
 //            throw new BussinessException(EmBusinessError.USER_NOT_EXIST);
 //        }
 
+
+        //MapUtil 的使用
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put("name","zrc");
+        map.put("age",18);
+        int age = MapUtils.getInteger(map,"age");
 
         logger.info("Hello " + user.getName());
         return CommonReturnType.create("Hello Spring boot 中国" + user.getName());
