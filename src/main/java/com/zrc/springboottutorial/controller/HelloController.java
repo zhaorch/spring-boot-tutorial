@@ -9,7 +9,7 @@ import com.zrc.springboottutorial.model.SysUserCriteria;
 import com.zrc.springboottutorial.model.ZrcResource;
 import com.zrc.springboottutorial.response.CommonReturnType;
 import com.zrc.springboottutorial.service.SysUserService;
-import com.zrc.springboottutorial.utils.JsonUtils;
+import com.zrc.springboottutorial.utils.RedisClient4ProtoStuff;
 import com.zrc.springboottutorial.utils.RedisOperator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -34,12 +34,14 @@ import java.util.Set;
 @RestController
 @Api(value = "HelloController")
 @Validated
-public class HelloController{
+public class HelloController {
 
     @Autowired
     private SysUserService sysUserService;
     @Autowired
     private RedisOperator redis;
+    @Autowired
+    private RedisClient4ProtoStuff redis2;
     @Autowired
     private ZrcResource resource;
 
@@ -53,29 +55,44 @@ public class HelloController{
     public CommonReturnType hello(String id) throws BussinessException {
         //@RequestParam(value="id") String id  如果用这个注解，则url中id必须存在否则报错
         String userID = "190709BX013WFZ7C";
-        if(!StringUtils.isEmpty(id)){
+        if (!StringUtils.isEmpty(id)) {
             userID = id;
         }
-        String userStr = redis.get("json:info:user:"+userID);
-        SysUser user = null;
-        if(StringUtils.isEmpty(userStr)) {
+
+        SysUser user =  redis2.get("user:" + userID,SysUser.class);
+        if (user == null) {
             System.out.println("查询数据库");
             user = sysUserService.getSysUserById(userID);
-
-            if(user != null) {
-                redis.set("json:info:user:"+userID, JsonUtils.objectToJson(user), 2000);
+            if (user == null) {
+                throw new BussinessException(EmBusinessError.USER_NOT_EXIST);
             }
-        }
-        else{
+
+            redis2.setWithExpire("user:" + userID, user,2000);
+        } else {
             System.out.println("直接从缓存读");
-            user = JsonUtils.jsonToPojo(userStr,SysUser.class);
         }
 
-        if(user == null){
-            throw new BussinessException(EmBusinessError.USER_NOT_EXIST);
-        }
-        logger.info("Hello "+ user.getName());
-        return  CommonReturnType.create("Hello Spring boot 中国" + user.getName());
+          //传统的json方法
+//        String userStr = redis.get("json:info:user:" + userID);
+//        SysUser user = null;
+//        if (StringUtils.isEmpty(userStr)) {
+//            System.out.println("查询数据库");
+//            user = sysUserService.getSysUserById(userID);
+//
+//            if (user != null) {
+//                //redis.set("json:info:user:" + userID, JsonUtils.objectToJson(user), 2000);
+//            }
+//        } else {
+//            System.out.println("直接从缓存读");
+//            user = JsonUtils.jsonToPojo(userStr, SysUser.class);
+//        }
+//        if (user == null) {
+//            throw new BussinessException(EmBusinessError.USER_NOT_EXIST);
+//        }
+
+
+        logger.info("Hello " + user.getName());
+        return CommonReturnType.create("Hello Spring boot 中国" + user.getName());
     }
 
     @RequestMapping("/hello2")
@@ -113,8 +130,8 @@ public class HelloController{
     }
 
     @RequestMapping("getResource")
-    public CommonReturnType getResource(){
-        return  CommonReturnType.create(resource.getName());
+    public CommonReturnType getResource() {
+        return CommonReturnType.create(resource.getName());
     }
 
     /**
@@ -125,7 +142,7 @@ public class HelloController{
             @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "String")})
     @PostMapping("/login")
     //@SystemControllerLog(description = "/admin/user/login")
-    public CommonReturnType login(String userName, String password){
+    public CommonReturnType login(String userName, String password) {
 //        @Api： 描述 Controller
 //        @ApiIgnore： 忽略该 Controller，指不对当前类做扫描
 //        @ApiOperation： 描述 Controller类中的 method接口
@@ -142,15 +159,17 @@ public class HelloController{
         return CommonReturnType.create(userName);
     }
 
-    /**如果只有少数对象，直接把参数写到Controller层，然后在Controller层进行验证就可以了。*/
+    /**
+     * 如果只有少数对象，直接把参数写到Controller层，然后在Controller层进行验证就可以了。
+     */
     @RequestMapping(value = "/hibernateValidator", method = RequestMethod.GET)
     public CommonReturnType hibernateValidator(@Range(min = 1, max = 9, message = "年级只能从1-9")
-                      @RequestParam(name = "grade", required = true)
-                              int grade,
-                      @Min(value = 1, message = "班级最小只能1")
-                      @Max(value = 99, message = "班级最大只能99")
-                      @RequestParam(name = "classroom", required = true)
-                              int classroom) {
+                                               @RequestParam(name = "grade", required = true)
+                                                       int grade,
+                                               @Min(value = 1, message = "班级最小只能1")
+                                               @Max(value = 99, message = "班级最大只能99")
+                                               @RequestParam(name = "classroom", required = true)
+                                                       int classroom) {
         //http://127.0.0.1:8090/hibernateValidator?grade=10&classroom=100
 
         System.out.println(grade + "," + classroom);
@@ -158,7 +177,7 @@ public class HelloController{
     }
 
     @RequestMapping("/hibernateValidator2")
-    public CommonReturnType hibernateValidator2(){
+    public CommonReturnType hibernateValidator2() {
 
 //        @Null 被注释的元素必须为 null
 //        @NotNull    被注释的元素必须不为 null
@@ -186,7 +205,7 @@ public class HelloController{
         user.setName("Zrc");
         user.setGender(2);
         Set<ConstraintViolation<SysUser>> violationSet = validator.validate(user);
-        if(!violationSet.isEmpty()) {
+        if (!violationSet.isEmpty()) {
             for (ConstraintViolation<SysUser> model : violationSet) {
                 System.out.println(model.getMessage());
             }
