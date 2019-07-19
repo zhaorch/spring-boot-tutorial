@@ -13,8 +13,16 @@ import java.util.stream.Collectors;
 
 @Component
 public class RedisClient4ProtoStuff {
+//    @Autowired
+//    private RedisTemplate<String, String> redisTemplate;
+
+    private final RedisTemplate<String, String> redisTemplate;
+
     @Autowired
-    private RedisTemplate<String, String> redisTemplate;
+    public RedisClient4ProtoStuff(RedisTemplate<String, String> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
+
 
     /**
      * get cache
