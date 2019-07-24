@@ -53,6 +53,11 @@ public class HelloController {
 
     private static Logger logger = LoggerFactory.getLogger(HelloController.class);
 
+    @GetMapping(value = "/helloworld/{name}")
+    public String helloWorld(@PathVariable(name = "name") String name) {
+        return "Hello " + name;
+    }
+
     @RequestMapping(value = "/hello", method = RequestMethod.GET)
     @SystemControllerLog(description = "调用Hello")
     public CommonReturnType hello(String id) throws BussinessException {
