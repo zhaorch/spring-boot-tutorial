@@ -9,6 +9,7 @@ import com.zrc.springboottutorial.model.SysUserCriteria;
 import com.zrc.springboottutorial.model.ZrcResource;
 import com.zrc.springboottutorial.response.CommonReturnType;
 import com.zrc.springboottutorial.service.SysUserService;
+import com.zrc.springboottutorial.utils.Greeting;
 import com.zrc.springboottutorial.utils.RedisClient4ProtoStuff;
 import com.zrc.springboottutorial.utils.RedisOperator;
 import io.swagger.annotations.Api;
@@ -20,10 +21,12 @@ import org.hibernate.validator.constraints.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
@@ -33,6 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
 @RestController
 @Api(value = "HelloController")
@@ -57,6 +62,57 @@ public class HelloController {
     public String helloWorld(@PathVariable(name = "name") String name) {
         return "Hello " + name;
     }
+
+    @GetMapping(value = "/helloworld2")
+    public String helloWorld2(@RequestParam(name = "name", required = false) String MyName, HttpServletRequest request) {
+        String name = request.getParameter("name");
+        return "Hello " + MyName + "," + name;
+    }
+
+    @GetMapping(value = "/helloworld3")
+    public String helloWorld3(@RequestHeader("User-Agent")String browser,@RequestHeader("Cookie")String cookie){
+        return cookie + "hello "+browser;
+    }
+
+    @GetMapping(value = "/helloworld4")
+    public ResponseEntity<String> helloWorld4(@RequestParam(name = "name", required = false, defaultValue = "ZRC") String MyName){
+        HttpHeaders headers = new HttpHeaders();
+//        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+//        headers.add("Content-Disposition", "attachment; filename=" + MyName);
+//        headers.add("Pragma", "no-cache");
+//        headers.add("Expires", "0");
+//        headers.add("Last-Modified", new Date().toString());
+        headers.add("ETag", String.valueOf(System.currentTimeMillis()));
+        return  ResponseEntity
+                .ok()
+                .headers(headers)
+                //.contentLength(MyName.length())
+                //.contentType(MediaType.parseMediaType("application/octet-stream"))
+                //.body(new FileSystemResource(file));
+                .body("Hello " + MyName);
+    }
+
+//    @GetMapping(value = "/xml",
+//            //consumes = MediaType.APPLICATION_XML_VALUE,
+//            produces = MediaType.APPLICATION_XML_VALUE) // jackson-dataformat-xml
+    @GetMapping(value = "/xml",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public SysUser XML(){
+        SysUser user = new SysUser();
+        user.setName("ZRC黑卡");
+        user.setGender(1);
+        return user;
+    }
+
+    @RequestMapping("/greeting")
+    public HttpEntity<Greeting> greeting(
+            @RequestParam(value = "name", required = false, defaultValue = "World") String name) {
+
+        Greeting greeting = new Greeting(String.format("Hello %s", name));
+        greeting.add(linkTo(methodOn(HelloController.class).greeting(name)).withSelfRel());
+
+        return new ResponseEntity<>(greeting, HttpStatus.OK);
+    }
+
 
     @RequestMapping(value = "/hello", method = RequestMethod.GET)
     @SystemControllerLog(description = "调用Hello")
@@ -152,7 +208,7 @@ public class HelloController {
      * 用户登录
      */
     @ApiOperation(value = "登录")
-    @ApiImplicitParams({@ApiImplicitParam(name = "userName", value = "用户名", required = true, dataType = "String"),
+    @ApiImplicitParams({@ApiImplicitParam(name = "userName", value = "用户名", required = true, defaultValue = "ZRC", dataType = "String"),
             @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "String")})
     @PostMapping("/login")
     //@SystemControllerLog(description = "/admin/user/login")
