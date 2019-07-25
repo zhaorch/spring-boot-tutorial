@@ -6,7 +6,6 @@ import com.zrc.springboottutorial.springboot.MyServlet2;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
@@ -22,6 +21,7 @@ import javax.servlet.DispatcherType;
 //@ComponentScan(basePackages = {"com.zrc"})
 //扫描Servlet
 @ServletComponentScan(basePackages = {"com.zrc.springboottutorial.servlet"})
+//public class SpringboottutorialApplication extends SpringBootServletInitializer {
 public class SpringboottutorialApplication {
     public static void main(String[] args) {
         SpringApplication.run(SpringboottutorialApplication.class, args);
@@ -54,11 +54,11 @@ public class SpringboottutorialApplication {
         temp.setListener(new MyListener2());
         return temp;
     }
-
-    protected SpringApplicationBuilder config(SpringApplicationBuilder builder){
-
-        builder.sources(SpringboottutorialApplication.class);
-
-        return builder;
-    }
+    // 本来是用来支持 JSP 的但是发现注释掉也没事 包括类的继承 extends SpringBootServletInitializer 也没用
+    // 如果开启了thymeleaf 则 JSP 会失效
+//    @Override
+//    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder){
+//        builder.sources(SpringboottutorialApplication.class);
+//        return builder;
+//    }
 }
