@@ -61,4 +61,15 @@ public class SpringboottutorialApplication {
 //        builder.sources(SpringboottutorialApplication.class);
 //        return builder;
 //    }
+
+    ///配置的方式修改端口，优先级大于 applications.properties
+//    @Bean
+//    public WebServerFactoryCustomizer<ConfigurableWebServerFactory> webServerFactoryCustomizer(){
+//        return new WebServerFactoryCustomizer<ConfigurableWebServerFactory>() {
+//            @Override
+//            public void customize(ConfigurableWebServerFactory factory) {
+//                factory.setPort(8081);
+//            }
+//        };
+//    }
 }
