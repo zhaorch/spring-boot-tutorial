@@ -9,6 +9,7 @@ import com.zrc.springboottutorial.model.SysUserCriteria;
 import com.zrc.springboottutorial.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -16,6 +17,7 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 
 @Service
+@EnableTransactionManagement
 public class SysUserServiceImpl implements SysUserService {
 
 	@Autowired

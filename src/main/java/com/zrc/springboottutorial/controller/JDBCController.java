@@ -2,11 +2,19 @@ package com.zrc.springboottutorial.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.sql.DataSource;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +33,9 @@ public class JDBCController {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private PlatformTransactionManager platformTransactionManager;
 
     @GetMapping("/jdbc")
     public Map<String, Object> hello() {
@@ -85,12 +96,29 @@ public class JDBCController {
     }
 
     @GetMapping("/jdbc2")
+    @Transactional(propagation = Propagation.SUPPORTS)
     public Map<String, Object> hello2() {
         Map<String, Object> result = new HashMap<String, Object>();
         String sql = "select count(*) from SYS_USER";
         int count = jdbcTemplate.queryForObject(sql, Integer.class);
         result.put("Count", count);
 
+        return result;
+    }
+
+
+    @GetMapping("/jdbc3")
+    public Map<String, Object> hello3() {
+        DefaultTransactionDefinition defaultTransactionDefinition = new DefaultTransactionDefinition();
+
+        TransactionStatus transaction = platformTransactionManager.getTransaction(defaultTransactionDefinition);
+
+        Map<String, Object> result = new HashMap<String, Object>();
+        String sql = "select count(*) from SYS_USER";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class);
+        result.put("Count", count);
+
+        platformTransactionManager.commit(transaction);
         return result;
     }
 }
