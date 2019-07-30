@@ -11,6 +11,7 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.servlet.DispatcherType;
 
@@ -21,6 +22,8 @@ import javax.servlet.DispatcherType;
 //@ComponentScan(basePackages = {"com.zrc"})
 //扫描Servlet
 @ServletComponentScan(basePackages = {"com.zrc.springboottutorial.servlet"})
+//@EnableJpaRepositories(basePackages = {"com.zrc.springboottutorial"})
+@EnableTransactionManagement
 //public class SpringboottutorialApplication extends SpringBootServletInitializer {
 public class SpringboottutorialApplication {
     public static void main(String[] args) {
