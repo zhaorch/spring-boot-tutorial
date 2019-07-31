@@ -27,6 +27,10 @@ import javax.servlet.DispatcherType;
 //public class SpringboottutorialApplication extends SpringBootServletInitializer {
 public class SpringboottutorialApplication {
     public static void main(String[] args) {
+//        Integer a = new Integer(10);
+//        Integer b = new Integer(10);
+//        System.out.println("a==b:"+ (a == b)); //false
+//        System.out.println("a.hashCode()==b.hashCode():"+ (a.hashCode() == b.hashCode())); //true
         SpringApplication.run(SpringboottutorialApplication.class, args);
     }
 
