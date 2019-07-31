@@ -125,13 +125,17 @@ public class HelloController {
 
         SysUser user =  redis2.get("user:" + userID,SysUser.class);
         if (user == null) {
-            System.out.println("查询数据库");
-            user = sysUserService.getSysUserById(userID);
-            if (user == null) {
-                throw new BussinessException(EmBusinessError.USER_NOT_EXIST);
+            synchronized (this) {
+                user =  redis2.get("user:" + userID,SysUser.class);
+                if (user == null) {
+                    System.out.println("查询数据库");
+                    user = sysUserService.getSysUserById(userID);
+                    if (user == null) {
+                        throw new BussinessException(EmBusinessError.USER_NOT_EXIST);
+                    }
+                    redis2.setWithExpire("user:" + userID, user, 2000);
+                }
             }
-
-            redis2.setWithExpire("user:" + userID, user,2000);
         } else {
             System.out.println("直接从缓存读");
         }
