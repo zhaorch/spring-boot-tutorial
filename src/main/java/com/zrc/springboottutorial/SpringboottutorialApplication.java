@@ -6,6 +6,7 @@ import com.zrc.springboottutorial.springboot.MyServlet2;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
@@ -24,6 +25,7 @@ import javax.servlet.DispatcherType;
 @ServletComponentScan(basePackages = {"com.zrc.springboottutorial.servlet"})
 //@EnableJpaRepositories(basePackages = {"com.zrc.springboottutorial"})
 @EnableTransactionManagement
+@EnableConfigurationProperties
 //public class SpringboottutorialApplication extends SpringBootServletInitializer {
 public class SpringboottutorialApplication {
     public static void main(String[] args) {

@@ -199,4 +199,14 @@ public class SysUser implements Serializable {
         result = prime * result + ((getGender() == null) ? 0 : getGender().hashCode());
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "SysUser{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", birthday=" + birthday +
+                ", gender=" + gender +
+                '}';
+    }
 }
