@@ -5,6 +5,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.header.writers.frameoptions.AllowFromStrategy;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,5 +31,18 @@ public class WebSecurityConfiguration  extends WebSecurityConfigurerAdapter {
         http.headers().contentSecurityPolicy("script-src https://code.jquery.com/");
 
 
+        //X-Frame-Options header  允许同域请求
+        //http.headers().frameOptions().sameOrigin();
+
+        // X-Frame-Options header  跨域请求白名单
+        http.headers().addHeaderWriter(new XFrameOptionsHeaderWriter(new AllowFromStrategy() {
+            @Override
+            public String getAllowFromValue(HttpServletRequest request) {
+                return "www.zrc.com";
+            }
+        }));
+
+        //XSS header
+        http.headers().xssProtection().block(true);
     }
 }
