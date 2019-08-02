@@ -14,6 +14,10 @@ public class CheckCaseValidator implements ConstraintValidator<CheckCase, String
             return true;
         }
 
+//        constraintValidatorContext.disableDefaultConstraintViolation();
+//        ConstraintValidatorContext.ConstraintViolationBuilder builder = constraintValidatorContext.buildConstraintViolationWithTemplate("名称必须大小写自定义ZRC");
+//        builder.addConstraintViolation();
+
         if (caseMode == CaseMode.UPPER) {
             return s.equals(s.toUpperCase());
         } else {
