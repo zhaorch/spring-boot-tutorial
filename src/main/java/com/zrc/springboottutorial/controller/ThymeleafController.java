@@ -2,7 +2,9 @@ package com.zrc.springboottutorial.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,4 +20,11 @@ public class ThymeleafController {
         map.addAttribute("name", "thymeleaf-黑卡");
         return "thymeleaf/index";
     }
+
+    @PostMapping("/login")
+    @ResponseBody
+    public String login(String username,String password){
+        return "Login success ! Hello "+username;
+    }
+
 }
